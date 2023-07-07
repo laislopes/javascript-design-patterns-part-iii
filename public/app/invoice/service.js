@@ -1,5 +1,5 @@
 import { handleStatus } from '../utils/promise-helpers.js';
-import { partialize, compose} from '../utils/operators.js';
+import { partialize, compose, pipe} from '../utils/operators.js';
 import '../utils/array-helpers.js';
 
 const API = 'http://localhost:3000/invoices';
@@ -21,14 +21,9 @@ export const invoicesService = {
 
     sumItems(code){
         const filterItems = partialize(filterItemsByCode, code);
+        const sumItems = compose(sumItemsValue, filterItems, getItemsFromInvoices);
 
         return this.listAll()
-                    .then(invoices => 
-                        sumItemsValue(
-                            filterItems(
-                                getItemsFromInvoices(invoices)
-                                )
-                        )
-                    );
+                    .then(sumItems);
     }
 };
